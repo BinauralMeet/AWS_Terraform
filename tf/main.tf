@@ -48,8 +48,8 @@ module "ec2_cluster" {
   name                   = "jitsi-meet"
   instance_count         = 1
 
-  ami                    = "ami-07288201d2a68d471"
-  instance_type          = "t2.micro"
+  ami                    = "ami-09b86f9709b3c33d4"
+  instance_type          = "c5.large"
   key_name               = "jinge"
   monitoring             = true
   vpc_security_group_ids = [module.web_server_sg.this_security_group_id]
@@ -94,7 +94,7 @@ module "alb" {
     {
       name_prefix      = "jitsi"
       backend_protocol = "HTTPS"
-      backend_port     = 8443
+      backend_port     = 443
       target_type      = "instance"
     }
   ]
@@ -126,3 +126,8 @@ module "alb" {
   }
 }
 
+resource "aws_lb_target_group_attachment" "jitsi_target" {
+  target_group_arn = module.alb.target_group_arns.0
+  target_id        = module.ec2_cluster.id.0
+  port             = 443
+}
